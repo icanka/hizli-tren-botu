@@ -43,13 +43,14 @@ The system consists of three main components managed via Docker Compose:
    - Runs `celery -A tasks.celery_tasks worker` to execute periodic or long-running TCDD train search tasks asynchronously.
 
 3. **`redis` (Broker & State Storage)**:
-   - Redis 7 (Alpine) container used as the message broker and result store for Celery tasks.
+   - Redis (Alpine) container used as the message broker and result store for Celery tasks.
 
 ---
 
 ## 📋 Prerequisites
 
-- **Docker & Docker Compose** (v2.20+)
+- **Docker Engine** (25.0+) and **Docker Compose** (v2.24+)
+  - Docker Engine 25.0+ is required for the `start_interval` healthcheck option used by the Celery service.
 - **Telegram Bot Token**: Created via [@BotFather](https://t.me/BotFather) on Telegram.
 - **Authorized Telegram User IDs**: Your numeric Telegram ID (get it from [@userinfobot](https://t.me/userinfobot)).
 
@@ -77,12 +78,18 @@ BOT_TOKEN=123456789:ABCdefGHIjklMNOpqrsTUVwxyZ
 AUTH_USER_IDS=123456789,987654321
 ```
 
-### 3. Build & Start Services
+### 3. Create Data Directories
+The application writes logs to `bot_data/logs/` at startup. Create this directory before starting the services — Python's `FileHandler` does not create parent directories automatically, and the application will crash with `FileNotFoundError` if the directory is missing:
+```bash
+mkdir -p bot_data/logs
+```
+
+### 4. Build & Start Services
 ```bash
 docker compose up -d --build
 ```
 
-### 4. Verify Service Health
+### 5. Verify Service Health
 Check running containers and logs:
 ```bash
 docker compose ps
@@ -109,22 +116,30 @@ Ensure Redis is installed and running on port `6379`:
 redis-server
 ```
 
-### 3. Start Celery Worker
-In a new terminal window (with `.venv` activated and `PYTHONPATH=src`):
+### 3. Create Data Directories
+The application writes logs to `../bot_data/logs/` (relative to the `src/` working directory). Create this directory from the project root before starting the services:
 ```bash
-export PYTHONPATH=src
+mkdir -p bot_data/logs
+```
+
+### 4. Start Celery Worker
+In a new terminal window (with `.venv` activated). Run from the `src/` directory so that log paths (`../bot_data/logs/`) resolve correctly to `bot_data/logs/`:
+```bash
+cd src
+export PYTHONPATH=.
 celery -A tasks.celery_tasks worker -c 1 --loglevel=INFO
 ```
 
-### 4. Start Telegram Bot
-In another terminal window:
+### 5. Start Telegram Bot
+In another terminal window. Run from the `src/` directory so that log paths resolve correctly:
 ```bash
+cd src
 export BOT_TOKEN="your_bot_token"
 export AUTH_USER_IDS="your_telegram_id"
-export PERSISTENCE_FILE_PATH="bot_data/my_persistence"
-export PYTHONPATH=src
+export PERSISTENCE_FILE_PATH="../bot_data/my_persistence"
+export PYTHONPATH=.
 
-python3 src/__main__.py
+python3 __main__.py
 ```
 
 ---
@@ -165,6 +180,8 @@ sudo systemctl enable --now yhstbot
 All persistent state and logs are stored in the `./bot_data/` directory:
 - `/bot_data/my_persistence`: Telegram bot conversation states & user settings.
 - `/bot_data/logs/`: Application logs for bot and Celery.
+
+> **Note:** The `bot_data/logs/` directory must exist before starting the services. The application does not create it automatically — see the [Quick Start](#-quick-start-docker-compose-deployment) and [Local Development](#-local-development-setup-without-docker) sections above.
 
 **Backup recommendation**: Periodically back up `./bot_data/my_persistence`.
 
