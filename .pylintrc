@@ -4,16 +4,23 @@
 init-hook="import sys; sys.path.insert(0, 'src')"
 
 [MESSAGES CONTROL]
-# E0401: import-error — false positive, local imports resolve via PYTHONPATH in Docker
-# E0602: undefined-variable — false positive, all from wildcard imports (*)
-# R0801: duplicate-code — false positive, common logging boilerplate
-# C0114: missing-module-docstring — not enforced
-# R0903: too-few-public-methods — dataclasses and enums don't need methods
-disable=import-error,
-        undefined-variable,
-        duplicate-code,
-        missing-module-docstring,
-        too-few-public-methods
+# Minimal: only rules that catch actual runtime errors and logic bugs.
+# All style (C) and design-opinion (R) checks are disabled.
+disable=
+    # Entire categories: convention (style) and refactoring (design opinions)
+    C,
+    R,
+    # Verbosity noise from inline suppressions
+    locally-disabled,
+    suppressed-message,
+    # Project-specific false positives
+    fixme,                      # TODO/FIXME comments are intentional
+    unused-argument,            # Telegram/APScheduler callback signatures are fixed
+    undefined-variable,         # names from wildcard imports (constants.py)
+    import-error,               # imports resolve via Docker PYTHONPATH
+
+enable=
+    useless-suppression,        # flag stale # pylint: disable= comments
 
 [FORMAT]
 max-line-length=120
