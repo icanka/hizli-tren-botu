@@ -1,0 +1,23 @@
+name: Docker Build
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "Dockerfile"
+      - "requirements.txt"
+      - "src/**"
+  pull_request:
+    branches: [main, master]
+    paths:
+      - "Dockerfile"
+      - "requirements.txt"
+      - "src/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build Docker image
+      run: docker build -t bot-test .
