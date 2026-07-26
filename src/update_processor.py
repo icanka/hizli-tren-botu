@@ -4,13 +4,7 @@ import logging
 import os
 from typing import Dict, Awaitable
 import asyncio
-from telegram import Update
-from telegram.ext import (
-    Application,
-    CommandHandler,
-    ContextTypes,
-    BaseUpdateProcessor,
-)
+from telegram.ext import BaseUpdateProcessor
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -78,7 +72,6 @@ class CustomUpdateProcessor(BaseUpdateProcessor):
 
     def __init__(self, **kwargs) -> None:
         super().__init__(max_concurrent_updates=kwargs.get("max_concurrent_updates", 1))
-        print("AUTH_USER_IDS: {}".format(os.environ.get("AUTH_USER_IDS", "")))
         logger.info("AUTH_USER_IDS: %s", os.environ.get("AUTH_USER_IDS", ""))
         self.user_locks = {}
         self.auth_user_ids = [
@@ -92,30 +85,3 @@ class CustomUpdateProcessor(BaseUpdateProcessor):
         logger.info("Shutting down update processor")
         self.user_locks = None
         self.auth_user_ids = None
-
-
-async def say_hello(update: Update, _: ContextTypes) -> None:
-    """Send a message when the command /start is issued."""
-    user = update.message.from_user
-    await update.message.reply_text(f"Hello {user.first_name}!")
-    return 0
-
-
-def main() -> None:
-    """Run the bot."""
-    # Create the Application and pass it your bot's token.
-    application = (
-        Application.builder()
-        .token("YOUR_TOKEN")
-        .concurrent_updates(CustomUpdateProcessor(max_concurrent_updates=3))
-        .build()
-    )
-
-    say_hello_handler = CommandHandler("hi", say_hello)
-    application.add_handler(say_hello_handler)
-
-    application.run_polling()
-
-
-if __name__ == "__main__":
-    main()
