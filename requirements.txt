@@ -26,7 +26,7 @@ json5==0.9.25
 kombu==5.3.7
 mypy-extensions==1.0.0
 packaging==24.1
-pathspec==0.12.1
+pathspec==1.1.1
 pip-autoremove==0.10.0
 platformdirs==4.2.2
 prompt-toolkit==3.0.47
