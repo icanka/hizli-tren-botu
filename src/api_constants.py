@@ -1,3 +1,7 @@
+"""API constants for TCDD ticket system."""
+
+import os
+
 SEAT_CHECK_ENDPOINT = "https://api-yebsp.tcddtasimacilik.gov.tr/koltuk/klCheck"
 STATION_LIST_ENDPOINT = (
     "https://api-yebsp.tcddtasimacilik.gov.tr/istasyon/istasyonYukle"
@@ -39,7 +43,7 @@ REQUEST_HEADER = {
     "Accept": "*/*",
     "Accept-Language": "en-US,tr-TR;q=0.8,tr;q=0.5,en;q=0.3",
     "Accept-Encoding": "gzip, deflate, br",
-    "Authorization": "Basic REMOVED_BASIC_AUTH",
+    "Authorization": os.environ.get("TCDD_API_AUTH", ""),
     "Content-Type": "application/json",
     "Origin": "https://bilet.tcdd.gov.tr",
     "Connection": "keep-alive",
@@ -218,95 +222,6 @@ ticket_reservation_req_body = {
         "permiDetayList": [],
     },
     "koltukLockIdList": [],
-}
-
-# vb_enroll_control_req_body = {
-#     "kanalKodu": 3,
-#     "dil": 0,
-#     "islemTipi": 0,
-#     "yebspPaymentSuccessUrl": "https://bilet.tcdd.gov.tr/odeme-sonuc",
-#     "yebspPaymentFailureUrl": "https://bilet.tcdd.gov.tr/odeme",
-#     "biletRezOdemeBilgileri": {
-#         "krediKartNO": "REMOVED_CARD_NUMBER",
-#         "krediKartSahibiAdSoyad": "REMOVED_CARDHOLDER_NAME",
-#         "ccv": "360",
-#         "sonKullanmaTarihi": 3004,
-#         "toplamBiletTutari": None,  # 370
-#         "krediKartiTutari": None,  # 370
-#         "abonmanTutar": 0,
-#         "acikBiletKuponNoList": [],
-#         "acikBiletTutar": 0,
-#         "islemYeri": "7",
-#         "milPuan": 0
-#     },
-#     "koltukLockList": []
-# }
-
-ticket_reservation_req_body = {
-    "kanalKodu": "3",
-    "dil": 0,
-    "islemTipi": 0,
-    "biletRezYerBilgileri": [
-        {
-            "biletWSDVO": {
-                "seferBaslikId": None,
-                "aktarmaSiraNo": "0",
-                "binisIstasyonId": None,
-                "inisIstasyonId": None,
-                "hareketTarihi": None,
-                "varisTarihi": None,
-                "biletTipi": 1,
-                "maliyeNo": 0,
-                "grupMu": False,
-                "cezali": False,
-                "farkBileti": False,
-                "bagajBileti": False,
-                "hesCode": "",
-                "yolcuSiraNo": 1,
-                "tarifeId": None,
-                "vagonSiraNo": None,
-                "koltukNo": None,
-                "ucret": None,
-                "tckn": None,
-                "ad": None,
-                "soyad": None,
-                "dogumTar": None,
-                "iletisimEposta": None,
-                "iletisimCepTel": None,
-                "cinsiyet": None,
-                "trenTurTktId": None,
-                "koltukBazUcret": None,
-                "indirimsizUcret": None,
-                "statu": 0,
-                "seyahatTur": 2,
-                "vagonTipi": 0,
-                "minimumTasimaUcretiFarki": 0,
-            }
-        }
-    ],
-    "biletRezOdemeBilgileri": {
-        "vposReference": "REMOVED_VPOS_REF",
-        "krediKartSahibiAdSoyad": "REMOVED_CARDHOLDER_NAME",
-        "krediKartNO": "REMOVED_CARD_NUMBER",
-        "toplamBiletTutari": 370,
-        "krediKartiTutari": 370,
-        "abonmanTutar": 0,
-        "acikBiletTutar": 0,
-        "islemYeri": "7",
-        "milPuan": 0,
-        "permiDetayList": [],
-    },
-    "koltukLockIdList": [
-        43502967424,
-        43502967425,
-        43502967426,
-        43502967427,
-        43502967428,
-        43502967429,
-        43502967430,
-        43502967431,
-        43502967432,
-    ],
 }
 
 
