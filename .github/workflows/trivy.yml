@@ -8,11 +8,16 @@ name: trivy
 on:
   push:
     branches: [ "main" ]
+    paths:
+      - "Dockerfile"
+      - "requirements.txt"
   pull_request:
-    # The branches below must be a subset of the branches above
     branches: [ "main" ]
+    paths:
+      - "Dockerfile"
+      - "requirements.txt"
   schedule:
-    - cron: '29 6 * * 1'
+    - cron: '29 6 1 * *'
 
 permissions:
   contents: read
@@ -27,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Build an image from Dockerfile
         run: |
