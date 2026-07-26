@@ -1,0 +1,23 @@
+[MAIN]
+# Add src/ to the Python path so pylint can resolve local imports
+# (matches Docker working_dir: /src)
+init-hook="import sys; sys.path.insert(0, 'src')"
+
+[MESSAGES CONTROL]
+# E0401: import-error — false positive, local imports resolve via PYTHONPATH in Docker
+# E0602: undefined-variable — false positive, all from wildcard imports (*)
+# R0801: duplicate-code — false positive, common logging boilerplate
+# C0114: missing-module-docstring — not enforced
+# R0903: too-few-public-methods — dataclasses and enums don't need methods
+disable=import-error,
+        undefined-variable,
+        duplicate-code,
+        missing-module-docstring,
+        too-few-public-methods
+
+[FORMAT]
+max-line-length=120
+
+[BASIC]
+# Allow single-letter variable names in loops/short functions
+good-names=i,j,k,e,x,_,fp
