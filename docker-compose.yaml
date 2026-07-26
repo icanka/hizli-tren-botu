@@ -1,0 +1,96 @@
+name: yhtticket-deployment
+services:
+
+  bot:
+    # use dockerfile to build image
+    entrypoint: ["/run/secrets/secrets2env.sh", "python", "__main__.py"]
+    secrets:
+      - BOT_TOKEN.env
+      - AUTH_USER_IDS.env
+      - secrets2env.sh
+    container_name: bot
+    image: bot
+    build: .
+    volumes:
+      - ./src:/src
+      - ./bot_data:/bot_data
+    environment:
+      - PERSISTENCE_FILE_PATH=/bot_data/my_persistence
+    working_dir: /src
+    restart: always
+    networks:
+      - yhtticker-network
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+  
+  celery:
+    container_name: celery
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./src:/src
+      - ./bot_data:/bot_data
+    healthcheck:
+      test: celery -A tasks.celery_tasks inspect ping -d celery@$(hostname)
+      interval: 60s
+      start_interval: 10s
+      timeout: 10s
+      retries: 3
+    working_dir: /src
+    command: celery -A tasks.celery_tasks worker -c 1 --loglevel=INFO 
+    restart: always
+    networks:
+      - yhtticker-network
+    # requires redis first
+    depends_on:
+      redis:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    ports:
+      - "6379:6379"
+    networks:
+      - yhtticker-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M
+
+
+networks:
+  yhtticker-network:
+    driver: bridge
+
+
+secrets:
+  BOT_TOKEN.env:
+    environment: BOT_TOKEN
+  AUTH_USER_IDS.env:
+    environment: AUTH_USER_IDS
+  secrets2env.sh:
+    file: ./secrets2env.sh
+  
