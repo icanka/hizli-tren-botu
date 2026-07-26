@@ -14,6 +14,9 @@ on:
       - "requirements.txt"
       - "src/**"
 
+permissions:
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
