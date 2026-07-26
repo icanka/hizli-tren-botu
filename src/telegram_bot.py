@@ -1191,14 +1191,13 @@ async def test_job(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     except AttributeError:
         chat_id = update.message.chat_id
 
-    for i in range(1):
-        job = context.job_queue.run_repeating(
-            callback=check_search_status,
-            first=0,
-            interval=10,
-            data=context.user_data,
-            chat_id=chat_id,
-        )
+    context.job_queue.run_repeating(
+        callback=check_search_status,
+        first=0,
+        interval=10,
+        data=context.user_data,
+        chat_id=chat_id,
+    )
     # wait until the job is actually executed
     return context.user_data.get(CURRENT_STATE, END)
 
