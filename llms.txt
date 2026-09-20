@@ -1,0 +1,17 @@
+# YHSTBOT - TCDD YHT Telegram Bot
+
+> Telegram bot that searches for TCDD YHT (Turkish high-speed train) tickets, helping users find and book trips between stations.
+
+YHSTBOT lets authorized Telegram users define a trip (origin, destination, date, time) via bot commands or inline queries. Long-running TCDD searches run asynchronously through Celery and Redis, and results are delivered in the Telegram conversation. The bot is deployed with Docker Compose (`bot`, `celery`, `redis` services).
+
+## Docs
+
+- [README](https://github.com/icanka/hizli-tren-botu/blob/main/README.md): Overview, quick start, usage
+- [DEPLOYMENT](https://github.com/icanka/hizli-tren-botu/blob/main/DEPLOYMENT.md): Docker Compose deployment, local development, production best practices
+- [AGENTS.md](https://github.com/icanka/hizli-tren-botu/blob/main/AGENTS.md): Guidance for AI coding agents
+- [ATTRIBUTION.md](https://github.com/icanka/hizli-tren-botu/blob/main/ATTRIBUTION.md): AI Attribution Protocol participation
+
+## Optional
+
+- [Source code](https://github.com/icanka/hizli-tren-botu/tree/main/src): Python source using python-telegram-bot, APScheduler, and Celery
+- [License](https://github.com/icanka/hizli-tren-botu/blob/main/LICENSE): GPL-3.0
