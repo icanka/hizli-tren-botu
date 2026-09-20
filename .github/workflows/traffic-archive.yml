@@ -1,0 +1,48 @@
+name: Traffic archive
+
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout bot repository
+        uses: actions/checkout@v7
+
+      - name: Checkout traffic archive repository
+        uses: actions/checkout@v7
+        with:
+          repository: icanka/hizli-tren-botu-traffic
+          token: ${{ secrets.TRAFFIC_TOKEN }}
+          path: archive
+
+      - name: Set up Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.13"
+
+      - name: Collect traffic data
+        env:
+          TRAFFIC_TOKEN: ${{ secrets.TRAFFIC_TOKEN }}
+          SOURCE_REPO: ${{ github.repository }}
+          OUT_DIR: ${{ github.workspace }}/archive
+        run: python scripts/archive_traffic.py
+
+      - name: Commit and push archive changes
+        run: |
+          cd archive
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then
+            echo "No traffic changes to commit"
+          else
+            git commit -m "traffic: $(date -u +%F)"
+            git push
+          fi
